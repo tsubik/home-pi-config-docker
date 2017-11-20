@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  hass:
+    image: "lroguet/rpi-home-assistant:latest"
+    network_mode: "host"
+    restart: "unless-stopped"
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/home/pi/home-assistant/configuration:/config"
+  portainer:
+    image: "hypriot/rpi-portainer"
+    restart: "unless-stopped"
+    ports:
+      - "9000:9000"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
