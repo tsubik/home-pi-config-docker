@@ -2,18 +2,74 @@ version: '3'
 
 services:
   hass:
-    image: "lroguet/rpi-home-assistant:latest"
-    network_mode: "host"
-    restart: "unless-stopped"
+    container_name: hass
+    image: lroguet/rpi-home-assistant:latest
+    network_mode: host
+    restart: unless-stopped
     devices:
-      - "/dev/ttyUSB0:/dev/ttyUSB0"
+      - /dev/ttyUSB0:/dev/ttyUSB0
     volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/home/pi/home-assistant/configuration:/config"
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONF_DIR}/home-assistant:/config
+
   portainer:
-    image: "hypriot/rpi-portainer"
-    restart: "unless-stopped"
+    container_name: portainer
+    image: hypriot/rpi-portainer
+    restart: unless-stopped
     ports:
-      - "9000:9000"
+      - 9000:9000
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  sonarr:
+    container_name: sonarr
+    image: lsioarmhf/sonarr
+    network_mode: host
+    restart: unless-stopped
+    ports:
+      - 8989:8989
+    volumes:
+      - ${CONF_DIR}/sonarr:/config
+      - ${DATA_DIR}/torrents:/downloads
+
+  jackett:
+    container_name: jackett
+    image: lsioarmhf/jackett
+    restart: always
+    ports:
+      - 9117:9117
+    volumes:
+      - ${CONF_DIR}/jackett:/config
+      - ${DATA_DIR}/torrents:/downloads
+
+  transmission:
+    container_name: transmission
+    build:
+      context: ./../docker-transmission-openvpn
+      dockerfile: Dockerfile.armhf
+    image: haugene/rpi-transmission-openvpn
+    devices:
+      - /dev/net/tun
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONF_DIR}/transmission:/config
+      - ${DATA_DIR}/torrents:/torrents
+    cap_add:
+    - NET_ADMIN
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    ports:
+      - 9091:9091
+    restart: always
+    environment:
+      - LOCAL_NETWORK=192.168.0.0/24
+      - OPENVPN_USERNAME
+      - OPENVPN_PASSWORD
+      - OPENVPN_PROVIDER
+      - OPENVPN_CONFIG
+      - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+      - TRANSMISSION_HOME=/config
+      - TRANSMISSION_DOWNLOAD_DIR=/torrents
+      - TRANSMISSION_INCOMPLETE_DIR=/torrents/incomplete
+      - TRANSMISSION_INCOMPLETE_DIR_ENABLED=true
