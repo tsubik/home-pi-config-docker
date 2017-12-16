@@ -75,7 +75,7 @@ services:
   transmission:
     container_name: transmission
     build:
-      context: ./../docker-transmission-openvpn
+      context: ./docker-transmission-openvpn
       dockerfile: Dockerfile.armhf
     image: haugene/rpi-transmission-openvpn
     devices:

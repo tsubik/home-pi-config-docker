@@ -1,0 +1,3 @@
+[submodule "docker-transmission-openvpn"]
+	path = docker-transmission-openvpn
+	url = https://github.com/haugene/docker-transmission-openvpn
