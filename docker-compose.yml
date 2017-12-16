@@ -21,6 +21,18 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+  organizr:
+    container_name: organizr
+    image: lsioarmhf/organizr
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ${CONF_DIR}/organizr:/config
+    environment:
+      - PUID
+      - GUID
+
   sonarr:
     container_name: sonarr
     image: lsioarmhf/sonarr
@@ -31,6 +43,24 @@ services:
     volumes:
       - ${CONF_DIR}/sonarr:/config
       - ${DATA_DIR}/torrents:/downloads
+      - ${DATA_DIR}/movies:/movies
+    environment:
+      - PUID
+      - PGID
+
+  radarr:
+    container_name: radarr
+    image: lsioarmhf/radarr
+    network_mode: host
+    restart: unless-stopped
+    ports:
+      - 7878:7878
+    volumes:
+      - ${CONF_DIR}/radarr:/config
+      - ${DATA_DIR}/torrents:/downloads
+    environment:
+      - PUID
+      - PGID
 
   jackett:
     container_name: jackett
@@ -68,8 +98,11 @@ services:
       - OPENVPN_PASSWORD
       - OPENVPN_PROVIDER
       - OPENVPN_CONFIG
-      - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+      - OPENVPN_OPTS=--ping 10 --ping-exit 30
       - TRANSMISSION_HOME=/config
       - TRANSMISSION_DOWNLOAD_DIR=/torrents
       - TRANSMISSION_INCOMPLETE_DIR=/torrents/incomplete
       - TRANSMISSION_INCOMPLETE_DIR_ENABLED=true
+      - TRANSMISSION_WATCH_DIR=/torrents/watch
+      - PUID
+      - PGID
