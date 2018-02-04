@@ -6,9 +6,8 @@ services:
     image: lroguet/rpi-home-assistant:latest
     network_mode: host
     restart: unless-stopped
-    devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
     volumes:
+      - /dev/bus/usb:/dev/bus/usb
       - /etc/localtime:/etc/localtime:ro
       - ${CONF_DIR}/home-assistant:/config
 
