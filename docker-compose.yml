@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 
 services:
   hass:
@@ -27,22 +27,9 @@ services:
       - PUID
       - PGID
 
-  organizr:
-    container_name: organizr
-    image: lsioarmhf/organizr
-    restart: unless-stopped
-    ports:
-      - 80:80
-    volumes:
-      - ${CONF_DIR}/organizr:/config
-    environment:
-      - PUID
-      - GUID
-
   sonarr:
     container_name: sonarr
     image: lsioarmhf/sonarr
-    network_mode: host
     restart: unless-stopped
     ports:
       - 8989:8989
@@ -57,10 +44,7 @@ services:
   radarr:
     container_name: radarr
     image: lsioarmhf/radarr
-    network_mode: host
     restart: unless-stopped
-    ports:
-      - 7878:7878
     volumes:
       - ${CONF_DIR}/radarr:/config
       - ${DATA_DIR}/torrents:/downloads
@@ -72,8 +56,6 @@ services:
     container_name: jackett
     image: lsioarmhf/jackett
     restart: always
-    ports:
-      - 9117:9117
     volumes:
       - ${CONF_DIR}/jackett:/config
       - ${DATA_DIR}/torrents:/downloads
@@ -87,20 +69,20 @@ services:
       context: ./docker-transmission-openvpn
       dockerfile: Dockerfile.armhf
     image: haugene/rpi-transmission-openvpn
+    restart: always
     devices:
       - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 9091:9091
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${CONF_DIR}/transmission:/config
       - ${DATA_DIR}/torrents:/torrents
-    cap_add:
-    - NET_ADMIN
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
-    ports:
-      - 9091:9091
-    restart: always
     environment:
       - LOCAL_NETWORK=192.168.0.0/24
       - OPENVPN_USERNAME
@@ -114,5 +96,21 @@ services:
       - TRANSMISSION_INCOMPLETE_DIR_ENABLED=true
       - TRANSMISSION_WATCH_DIR=/torrents/watch
       - TRANSMISSION_RPC_HOST_WHITELIST=home-pi.local
+      - PUID
+      - PGID
+
+  plex:
+    container_name: plex
+    image: lsioarmhf/plex
+    restart: always
+    ports:
+      - 32400:32400
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONF_DIR}/plex:/config
+      - ${DATA_DIR}/movies:/data/movies
+      - ${DATA_DIR}/series:/data/tvshows
+      - ${DATA_DIR}/mediabox:/data/mediabox
+    environment:
       - PUID
       - PGID
