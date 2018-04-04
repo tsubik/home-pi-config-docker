@@ -1,0 +1,6 @@
+:80
+
+root /var/deploy
+
+log stdout
+errors stdout

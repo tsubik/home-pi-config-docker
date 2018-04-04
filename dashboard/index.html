@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang=en>
+  <head>
+    <meta charset=utf-8>
+    <title>Home Media Server</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Open Sans', sans-serif;
+      }
+
+      .container {
+        display: flex;
+        width: 100%;
+        height: 100vh;
+      }
+
+      nav {
+        display: flex;
+        flex-direction: column;
+        background: #3498db;
+        color: #fff;
+      }
+
+      nav a {
+        padding: 10px 20px;
+        color: #fff;
+        text-decoration: none;
+      }
+
+      nav a:hover {
+        text-decoration: underline;
+      }
+
+      nav h2 {
+        padding: 0px 20px;
+        white-space: nowrap;
+      }
+
+      main {
+        flex: 1;
+      }
+
+      main iframe {
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <nav>
+        <h2>Home PI</h2>
+        <a href="http://192.168.0.107:8123" target="main">HASS</a>
+        <a href="http://192.168.0.107:32400" target="main">Plex</a>
+        <a href="http://192.168.0.107:9000" target="main">Portainer</a>
+        <a href="http://192.168.0.107:8989" target="main">Seriale</a>
+        <a href="http://192.168.0.107:7878" target="main">Filmy</a>
+        <a href="http://192.168.0.107:9117" target="main">Jackett</a>
+        <a href="http://192.168.0.107:9091" target="main">Torrenty</a>
+      </nav>
+      <main>
+        <iframe name="main" frameborder="0"></iframe>
+      </main>
+    </div>
+  </body>
+</html>

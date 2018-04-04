@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   hass:
@@ -17,7 +17,7 @@ services:
 
   portainer:
     container_name: portainer
-    image: hypriot/rpi-portainer
+    image: portainer/portainer:linux-arm
     restart: unless-stopped
     ports:
       - 9000:9000
@@ -45,6 +45,8 @@ services:
     container_name: radarr
     image: lsioarmhf/radarr
     restart: unless-stopped
+    ports:
+      - 7878:7878
     volumes:
       - ${CONF_DIR}/radarr:/config
       - ${DATA_DIR}/torrents:/downloads
@@ -56,6 +58,8 @@ services:
     container_name: jackett
     image: lsioarmhf/jackett
     restart: always
+    ports:
+      - 9117:9117
     volumes:
       - ${CONF_DIR}/jackett:/config
       - ${DATA_DIR}/torrents:/downloads
@@ -114,3 +118,14 @@ services:
     environment:
       - PUID
       - PGID
+
+  caddy:
+    container_name: caddy
+    build: ./dashboard
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      - CADDYPATH=/etc/caddy
+    volumes:
+      - ${CONF_DIR}/caddy:/etc/caddy
