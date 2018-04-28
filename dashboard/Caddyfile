@@ -1,5 +1,9 @@
 :80
 
+basicauth / {$CADDY_USERNAME} {$CADDY_PASSWORD}
+
+proxy / muximux:80
+
 root /var/deploy
 
 log stdout

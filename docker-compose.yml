@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 
 services:
   hass:
@@ -57,7 +57,7 @@ services:
   jackett:
     container_name: jackett
     image: lsioarmhf/jackett
-    restart: always
+    restart: unless-stopped
     ports:
       - 9117:9117
     volumes:
@@ -73,7 +73,7 @@ services:
       context: ./docker-transmission-openvpn
       dockerfile: Dockerfile.armhf
     image: haugene/rpi-transmission-openvpn
-    restart: always
+    restart: unless-stopped
     devices:
       - /dev/net/tun
     cap_add:
@@ -106,7 +106,7 @@ services:
   plex:
     container_name: plex
     image: lsioarmhf/plex
-    restart: always
+    restart: unless-stopped
     ports:
       - 32400:32400
     volumes:
@@ -114,18 +114,36 @@ services:
       - ${CONF_DIR}/plex:/config
       - ${DATA_DIR}/movies:/data/movies
       - ${DATA_DIR}/series:/data/tvshows
-      - ${DATA_DIR}/mediabox:/data/mediabox
+      - mediabox:/data/mediabox
     environment:
       - PUID
       - PGID
 
+  muximux:
+    container_name: muximux
+    image: lsioarmhf/muximux
+    restart: unless-stopped
+    volumes:
+      - ${CONF_DIR}/muximux:/config
+
   caddy:
     container_name: caddy
     build: ./dashboard
-    restart: always
+    restart: unless-stopped
     ports:
       - 80:80
     environment:
       - CADDYPATH=/etc/caddy
+      - CADDY_USERNAME
+      - CADDY_PASSWORD
     volumes:
       - ${CONF_DIR}/caddy:/etc/caddy
+
+volumes:
+  mediabox:
+    name: mediabox
+    driver: local
+    driver_opts:
+      type: cifs
+      device: ${MEDIABOX_URL}
+      o: username=${MEDIABOX_USERNAME},password=${MEDIABOX_PASSWORD},port=${MEDIABOX_PORT},vers=3.0,ro
