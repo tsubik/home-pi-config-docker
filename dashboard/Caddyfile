@@ -1,10 +1,35 @@
-:80
+{$CADDY_HOME_DOMAIN} {
+  proxy / organizr {
+    except /browse
+  }
 
-basicauth / {$CADDY_USERNAME} {$CADDY_PASSWORD}
+  filemanager /browse /mnt/data {
+    no_auth
+  }
 
-proxy / muximux:80
+  reauth {
+    path /browse
+    failure redirect target=https://{%CADDY_HOME_DOMAIN%}
+    upstream url=https://{%CADDY_HOME_DOMAIN%}/auth.php?user,cookies=true
+  }
 
-root /var/deploy
+}
 
-log stdout
-errors stdout
+{$CADDY_PORTAINER_DOMAIN} {
+  proxy / portainer:9000
+}
+
+{$CADDY_HASS_DOMAIN} {
+  proxy / 172.18.0.1:8123 {
+    websocket
+    transparent
+  }
+}
+
+# {$CADDY_PLEX_DOMAIN} {
+#   proxy / 172.18.0.1:32400
+# }
+
+{$CADDY_TORRENTS_DOMAIN} {
+  proxy / transmission:9091
+}
