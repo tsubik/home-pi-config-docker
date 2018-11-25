@@ -72,10 +72,7 @@ services:
 
   transmission:
     container_name: transmission
-    build:
-      context: ./docker-transmission-openvpn
-      dockerfile: Dockerfile.armhf
-    image: haugene/rpi-transmission-openvpn
+    image: haugene/transmission-openvpn:latest-armhf
     restart: unless-stopped
     devices:
       - /dev/net/tun
